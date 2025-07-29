@@ -21,6 +21,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
         :root {
@@ -377,6 +378,379 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
             }
+        }
+
+        /* Sample Report Section */
+        .sample-report {
+            padding: 6rem 0;
+            background: var(--bg-primary);
+        }
+
+        .report-showcase {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 1rem;
+        }
+
+        .report-header h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .report-header p {
+            margin: 0 0 2rem 0;
+            opacity: 0.9;
+        }
+
+        .report-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .report-content {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .report-loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .report-markdown {
+            padding: 2rem;
+        }
+
+        /* Markdown content styling */
+        .report-markdown h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            padding: 1rem 0;
+            border-bottom: 3px solid var(--primary-color);
+            text-align: center;
+        }
+
+        .report-markdown h3 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .report-markdown h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        .report-markdown p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .report-markdown ol,
+        .report-markdown ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .report-markdown li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .report-markdown strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Table styling for markdown */
+        .report-markdown table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .report-markdown th {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .report-markdown td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .report-markdown tr:last-child td {
+            border-bottom: none;
+        }
+
+        .report-markdown tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        /* Citation styling */
+        .report-markdown sup a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .report-markdown sup a:hover {
+            background-color: var(--primary-light);
+            color: white;
+            border-radius: 3px;
+            padding: 1px 3px;
+        }
+
+        /* Reference highlighting */
+        .report-markdown .reference-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .report-markdown .reference-item:target {
+            background-color: #fff3cd;
+            animation: highlight 2s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background-color: #fff3cd; }
+            100% { background-color: transparent; }
+        }
+
+        /* Analysis section styling */
+        .analysis-section {
+            margin: 1.5rem 0;
+        }
+
+        .analysis-section h4 {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            margin: 1rem 0 0.5rem 0;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Table container for overflow */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Strategy grid for report */
+        .report-markdown .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .report-markdown .strategy-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .report-markdown .strategy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .report-markdown .strategy-card h4 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .report-markdown .strategy-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-markdown .strategy-card li {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .report-markdown .strategy-card li::before {
+            content: "▶";
+            color: var(--accent-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Warning indicators grid */
+        .report-markdown .warning-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .report-markdown .indicator-card {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+
+        .report-markdown .indicator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .report-markdown .red-alert {
+            background: linear-gradient(135deg, #fee2e2, #fef2f2);
+            border-color: #ef4444;
+        }
+
+        .report-markdown .red-alert h4 {
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .report-markdown .opportunity-signal {
+            background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+            border-color: #10b981;
+        }
+
+        .report-markdown .opportunity-signal h4 {
+            color: #059669;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .report-markdown .indicator-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-markdown .indicator-card li {
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .report-markdown .red-alert li {
+            color: #7f1d1d;
+        }
+
+        .report-markdown .red-alert li::before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+
+        .report-markdown .opportunity-signal li {
+            color: #064e3b;
+        }
+
+        .report-markdown .opportunity-signal li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        /* References section styling */
+        .report-markdown .references-section {
+            background: var(--bg-tertiary);
+            margin: 2rem -2rem 0 -2rem;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .report-markdown .references-list {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .report-markdown .references-list .reference-item {
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .report-markdown .references-list .reference-item:hover {
+            background: var(--bg-secondary);
+            transform: translateX(4px);
+        }
+
+        /* Table citation links styling */
+        .report-markdown .table-citation {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin: 0 1px;
+        }
+
+        .report-markdown .table-citation:hover {
+            background-color: var(--primary-light);
+            color: white;
+            border-radius: 3px;
+            padding: 1px 3px;
         }
 
         /* How It Works */
@@ -848,8 +1222,8 @@
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#demo">Demo</a></li>
+                <li><a href="#sample-report">Sample Report</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#docs">Docs</a></li>
             </ul>
             <a href="https://github.com/phonism/research-weaver" class="github-btn">
                 <i class="fab fa-github"></i>
@@ -993,6 +1367,167 @@
         </div>
     </section>
 
+    <!-- Sample Report Section -->
+    <section id="sample-report" class="sample-report">
+        <div class="container">
+            <h2 class="section-title fade-in">📊 Sample Research Report</h2>
+            <p class="section-subtitle fade-in">
+                Explore a complete research report generated by Research Weaver's AI agents
+            </p>
+            <div class="report-showcase fade-in">
+                <div class="report-header">
+                    <h3>🐷 中国生猪市场投资机会综合分析报告</h3>
+                    <p>AI多智能体协作生成的专业投资研究报告</p>
+                    <div class="report-controls">
+                        <button class="btn btn-primary" onclick="toggleReportContent()">
+                            <i class="fas fa-file-alt"></i>
+                            <span id="toggle-text">Hide Report</span>
+                        </button>
+                        <a href="demos/research_report_demo.md" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-download"></i>
+                            Download Markdown
+                        </a>
+                    </div>
+                </div>
+                
+                <div id="report-content" class="report-content" style="display: block;">
+                    <div class="report-markdown">
+                        <h2>中国生猪市场投资机会综合分析报告（2025年7月）</h2>
+                        
+                        <h3>一、市场现状三维度验证</h3>
+                        <div class="analysis-section">
+                            <h4>1. 价格-产能联动</h4>
+                            <p>当前猪粮比5.1:1低于盈亏平衡点<sup><a href="#ref-1">[1]</a></sup>，但能繁母猪存栏4043万头仍高于正常保有量<sup><a href="#ref-2">[2]</a></sup>，预示2025Q4前供应压力持续。价格分析师预测Q4可能回升至16-17元/公斤<sup><a href="#ref-5">[5]</a></sup>，与供需分析师预测的130万吨缺口形成印证<sup><a href="#ref-9">[9]</a></sup>。</p>
+                            
+                            <h4>2. 政策缓冲效应</h4>
+                            <p>储备肉机制已启动8万吨收储<sup><a href="#ref-3">[3]</a></sup>，配合能繁母猪补贴（80元/头）<sup><a href="#ref-1">[1]</a></sup>，政策组合拳可缓解约15%的价格波动幅度。但环保升级要求（粪污利用率≥80%）<sup><a href="#ref-1">[1]</a></sup>将加速中小散户退出，利好规模化企业。</p>
+                            
+                            <h4>3. 成本-消费重构</h4>
+                            <p>饲料成本占比60-70%<sup><a href="#ref-4">[4]</a></sup>仍是主要风险，但豆粕价格3716元/吨较峰值下降11.5%<sup><a href="#ref-6">[6]</a></sup>。消费端预制菜需求增长（占比12%）<sup><a href="#ref-9">[9]</a></sup>创造新增长点，黑猪肉溢价30-50%<sup><a href="#ref-7">[7]</a></sup>显示高端化潜力。</p>
+                        </div>
+
+                        <h3>二、投资机会矩阵</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>机会类型</th>
+                                        <th>时间窗口</th>
+                                        <th>驱动因素</th>
+                                        <th>风险提示</th>
+                                        <th>数据支持</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>期货套利</strong></td>
+                                        <td>2025Q3-Q4</td>
+                                        <td>期现价差扩大（当前-8.2%）</td>
+                                        <td>政策干预超预期</td>
+                                        <td>[1][5]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>规模化养殖</strong></td>
+                                        <td>2025-2027</td>
+                                        <td>行业集中度提升（CR10达35%）</td>
+                                        <td>环保成本攀升</td>
+                                        <td>[2][13]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>冷链物流</strong></td>
+                                        <td>长期</td>
+                                        <td>冷鲜肉流通半径扩大</td>
+                                        <td>设备投资回收期长（5-7年）</td>
+                                        <td>[4][9]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>替代蛋白</strong></td>
+                                        <td>中期</td>
+                                        <td>年轻群体接受度提升</td>
+                                        <td>技术成熟度不足</td>
+                                        <td>[7][8]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>三、投资策略建议</h3>
+                        <div class="strategy-grid">
+                            <div class="strategy-card">
+                                <h4>1. 周期性机会</h4>
+                                <ul>
+                                    <li>关注2025Q3末的价格拐点信号（能繁母猪存栏降至4000万头以下）<sup><a href="#ref-2">[2]</a></sup></li>
+                                    <li>参考猪粮比预警区间（低于5:1时布局多单）<sup><a href="#ref-1">[1]</a></sup></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="strategy-card">
+                                <h4>2. 结构性机会</h4>
+                                <ul>
+                                    <li>重点考察年出栏50万头以上企业（享受250元/㎡建设补贴）<sup><a href="#ref-2">[2]</a></sup></li>
+                                    <li>跟踪楼房养猪项目（广东恩平案例显示环保投资回报率18%）<sup><a href="#ref-1">[1]</a></sup></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="strategy-card">
+                                <h4>3. 风险对冲工具</h4>
+                                <ul>
+                                    <li>利用豆粕期货对冲饲料成本（每头猪需0.3吨豆粕）<sup><a href="#ref-4">[4]</a></sup><sup><a href="#ref-6">[6]</a></sup></li>
+                                    <li>参与能繁母猪保险（覆盖60%市场价格波动）<sup><a href="#ref-1">[1]</a></sup></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h3>四、关键预警指标</h3>
+                        <div class="warning-indicators">
+                            <div class="indicator-card red-alert">
+                                <h4>🚨 红色警报</h4>
+                                <ul>
+                                    <li>豆粕价格突破4000元/吨（当前3716元/吨）<sup><a href="#ref-6">[6]</a></sup></li>
+                                    <li>单月进口量骤增30%以上（当前月均11.7万吨）<sup><a href="#ref-10">[10]</a></sup></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="indicator-card opportunity-signal">
+                                <h4>📈 机会信号</h4>
+                                <ul>
+                                    <li>猪粮比连续3周低于5:1<sup><a href="#ref-1">[1]</a></sup></li>
+                                    <li>规模化率突破75%<sup><a href="#ref-13">[13]</a></sup></li>
+                                    <li>预制菜用肉需求占比达15%<sup><a href="#ref-9">[9]</a></sup></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="references-section">
+                            <h3>参考文献</h3>
+                            <div class="references-list">
+                                <div class="reference-item" id="ref-1">1. <strong>生猪产品数据（2025年6月）</strong> - 2025-07 - <a href="#" target="_blank">www.moa.gov.cn</a></div>
+                                <div class="reference-item" id="ref-2">2. <strong>农业农村部关于印发《生猪产能调控实施方案（2024年修订）》的通知</strong> - 2024-03 - <a href="#" target="_blank">www.moa.gov.cn</a></div>
+                                <div class="reference-item" id="ref-3">3. <strong>中央储备冻猪肉收储轮储制度详细解读</strong> - 2025-06 - <a href="#" target="_blank">www.chinafeedm.com</a></div>
+                                <div class="reference-item" id="ref-4">4. <strong>2025 年度养殖行业分析</strong> - 2025-03 - <a href="#" target="_blank">www.lhratings.com</a></div>
+                                <div class="reference-item" id="ref-5">5. <strong>2025 年生猪价格分析及下半年走势预测</strong> - 2025-06 - <a href="#" target="_blank">wap.soozhu.com</a></div>
+                                <div class="reference-item" id="ref-6">6. <strong>2025年我国大宗农产品价格或走向分化</strong> - 2025-01 - <a href="#" target="_blank">www.21jingji.com</a></div>
+                                <div class="reference-item" id="ref-7">7. <strong>2025上半年猪肉产量大揭秘</strong> - 2025-06 - <a href="#" target="_blank">www.cvonet.com</a></div>
+                                <div class="reference-item" id="ref-8">8. <strong>2025猪肉市场供需、价格与消费趋势全解析</strong> - 2025-05 - <a href="#" target="_blank">www.jbzyw.com</a></div>
+                                <div class="reference-item" id="ref-9">9. <strong>2025年预测：中国猪肉消费量将达到5680万吨</strong> - 2024-12 - <a href="#" target="_blank">ngx.179c.com</a></div>
+                                <div class="reference-item" id="ref-10">10. <strong>2025年中国猪肉贸易的未来：趋势与预测</strong> - 2025-02 - <a href="#" target="_blank">landsurcapital.com</a></div>
+                                <div class="reference-item" id="ref-11">11. <strong>Mysteel农产品解读：2024年12月猪肉进口数据分析</strong> - 2025-01 - <a href="#" target="_blank">www.caaa.cn</a></div>
+                                <div class="reference-item" id="ref-12">12. <strong>北京市生猪产能调控实施方案（2024年修订）</strong> - 2024-04 - <a href="#" target="_blank">www.beijing.gov.cn</a></div>
+                                <div class="reference-item" id="ref-13">13. <strong>牧原股份成本目标12元/公斤</strong> - 2025-04 - <a href="#" target="_blank">finance.sina.com.cn</a></div>
+                            </div>
+                            
+                            <div class="report-footer">
+                                <p style="text-align: center; color: var(--text-light); font-style: italic; margin-top: 2rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 0.5rem;">
+                                    📊 本报告由Research Weaver AI多智能体系统自动生成，展示了从数据收集到深度分析的完整研究流程
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- How It Works Section -->
     <section id="how-it-works" class="how-it-works">
         <div class="container">
@@ -1097,6 +1632,73 @@
                 closeImageModal();
             }
         });
+        
+        // Toggle report content visibility
+        function toggleReportContent() {
+            const reportContent = document.getElementById('report-content');
+            const toggleText = document.getElementById('toggle-text');
+            
+            if (reportContent.style.display === 'none' || !reportContent.style.display) {
+                reportContent.style.display = 'block';
+                toggleText.textContent = 'Hide Report';
+                
+                // Setup citation links
+                setupCitationLinks();
+                
+                // Smooth scroll to report content
+                setTimeout(() => {
+                    reportContent.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else {
+                reportContent.style.display = 'none';
+                toggleText.textContent = 'View Full Report';
+            }
+        }
+        
+        // Setup citation links on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCitationLinks();
+        });
+        
+        function setupCitationLinks() {
+            // First, convert table citations to clickable links
+            document.querySelectorAll('.report-markdown table td').forEach(cell => {
+                let html = cell.innerHTML;
+                // Convert [1][5] format to clickable links
+                html = html.replace(/\[(\d+)\]/g, '<a href="#ref-$1" class="table-citation">[$1]</a>');
+                cell.innerHTML = html;
+            });
+            
+            // Add smooth scrolling to all citation links (both sup and table)
+            document.querySelectorAll('.report-markdown sup a, .report-markdown .table-citation').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        // Get the target position and add offset for header
+                        const targetRect = target.getBoundingClientRect();
+                        const absoluteTargetTop = targetRect.top + window.pageYOffset;
+                        const headerOffset = 80; // Account for sticky header
+                        
+                        window.scrollTo({
+                            top: absoluteTargetTop - headerOffset,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Highlight the reference briefly
+                        target.style.backgroundColor = '#fff3cd';
+                        target.style.transition = 'background-color 0.3s ease';
+                        setTimeout(() => {
+                            target.style.backgroundColor = '';
+                            setTimeout(() => {
+                                target.style.transition = '';
+                            }, 300);
+                        }, 2000);
+                    }
+                });
+            });
+        }
     </script>
 
     <script>
