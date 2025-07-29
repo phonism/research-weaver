@@ -268,13 +268,115 @@
             border: 1px solid var(--border-color);
         }
 
-        .demo-iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
+        .demo-preview {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .demo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        .preview-step {
+            background: var(--bg-secondary);
             border-radius: 0.5rem;
-            background: white;
-            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .preview-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-step h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .preview-step p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .preview-image {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-image img {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .preview-image img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal styles for image viewing */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content-img {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90%;
+            object-fit: contain;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            color: #bbb;
+        }
+
+        /* Responsive design for demo grid */
+        @media (max-width: 1024px) {
+            .demo-preview-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
         }
 
         /* How It Works */
@@ -379,8 +481,9 @@
                 align-items: center;
             }
 
-            .demo-iframe {
-                height: 400px;
+            /* Demo responsive */
+            .demo-container div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
             }
 
             .container {
@@ -398,6 +501,340 @@
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Demo Specific Styles */
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .demo-header h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        .demo-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .demo-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        .demo-sidebar {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .config-section, .how-it-works {
+            margin-bottom: 2rem;
+        }
+
+        .config-section h4, .how-it-works h4 {
+            margin: 0 0 1rem 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .config-item {
+            background: var(--bg-primary);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .config-detail {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .how-it-works ol {
+            padding-left: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .how-it-works li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .how-it-works p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .demo-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .demo-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .demo-btn.secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .demo-btn.secondary:hover {
+            background: var(--bg-secondary);
+        }
+
+        .demo-main {
+            background: var(--bg-primary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .query-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .query-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .query-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            font-family: inherit;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .thinking-section {
+            padding: 1.5rem;
+        }
+
+        .thinking-section h3 {
+            margin: 0 0 1rem 0;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+        }
+
+        .thinking-content {
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .thinking-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .thinking-item:last-child {
+            border-bottom: none;
+        }
+
+        .thinking-header {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .thinking-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .thinking-process {
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+            font-style: italic;
+        }
+
+        .action-block {
+            background: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-results {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .final-report {
+            padding: 1rem;
+            border-top: 2px solid var(--primary-color);
+            background: var(--bg-primary);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .final-report h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .final-report h4 {
+            color: var(--text-primary);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .final-report h5 {
+            color: var(--text-primary);
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .final-report p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .references {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        .references > div {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .references > div:last-child {
+            border-bottom: none;
+        }
+
+        .references a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .references a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-controls {
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            white-space: pre-wrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--primary-color); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-animation {
+            font-family: 'Courier New', monospace;
+            color: var(--text-primary);
+            border-right: 2px solid var(--primary-color);
+            animation: blink-caret 1s step-end infinite;
+        }
+
+        /* Hidden elements for animation */
+        .demo-step {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .demo-step.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
@@ -431,7 +868,7 @@
             <div class="hero-buttons">
                 <a href="#demo" class="btn btn-primary">
                     <i class="fas fa-play"></i>
-                    Try Live Demo
+                    View Demo
                 </a>
                 <a href="https://github.com/phonism/research-weaver" class="btn btn-secondary">
                     <i class="fas fa-download"></i>
@@ -486,20 +923,71 @@
     <!-- Demo Section -->
     <section id="demo" class="demo">
         <div class="container">
-            <h2 class="section-title fade-in">Live Demo</h2>
+            <h2 class="section-title fade-in">Demo Showcase</h2>
             <p class="section-subtitle fade-in">
-                See Research Weaver in action - watch as AI agents collaborate to conduct comprehensive research
+                See how Research Weaver's multi-agent system collaborates to conduct in-depth research
             </p>
             <div class="demo-container fade-in">
-                <iframe 
-                    src="demos/ResearchWeaver-demo1.html" 
-                    class="demo-iframe"
-                    title="Research Weaver Demo">
-                </iframe>
+                <div class="demo-preview">
+                    <div class="demo-header">
+                        <h3>🔬 Research Case Study: 生猪市场投资机会分析</h3>
+                        <p>Watch AI agents collaborate to analyze complex investment opportunities in the pig farming market</p>
+                    </div>
+                    
+                    <div class="demo-preview-grid">
+                        <div class="preview-step">
+                            <div class="step-icon">1️⃣</div>
+                            <h4>Task Analysis</h4>
+                            <p>Supervisor analyzes query and creates specialized researchers</p>
+                            <div class="preview-image">
+                                <img src="demos/image1.png" alt="Task Analysis" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color);" onclick="openImageModal(this.src)">
+                            </div>
+                        </div>
+                        
+                        <div class="preview-step">
+                            <div class="step-icon">2️⃣</div>
+                            <h4>Information Gathering</h4>
+                            <p>AI agents search, read, and extract relevant information</p>
+                            <div class="preview-image">
+                                <img src="demos/iamge2.png" alt="Information Gathering" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color);" onclick="openImageModal(this.src)">
+                            </div>
+                        </div>
+                        
+                        <div class="preview-step">
+                            <div class="step-icon">3️⃣</div>
+                            <h4>Expert Analysis</h4>
+                            <p>Policy experts analyze regulatory impacts and market trends</p>
+                            <div class="preview-image">
+                                <img src="demos/image3.png" alt="Expert Analysis" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color);" onclick="openImageModal(this.src)">
+                            </div>
+                        </div>
+                        
+                        <div class="preview-step">
+                            <div class="step-icon">4️⃣</div>
+                            <h4>Report Generation</h4>
+                            <p>Comprehensive research report with citations and insights</p>
+                            <div class="preview-image">
+                                <img src="demos/image4.png" alt="Report Generation" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color);" onclick="openImageModal(this.src)">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="demo-controls">
+                        <a href="demos/demo.html" class="demo-btn primary">
+                            <i class="fas fa-play"></i>
+                            View Full Demo
+                        </a>
+                        <a href="https://github.com/phonism/research-weaver" class="demo-btn secondary">
+                            <i class="fas fa-code"></i>
+                            Try It Yourself
+                        </a>
+                    </div>
+                </div>
             </div>
             <div style="text-align: center; margin-top: 2rem;">
                 <p class="hero-subtitle">
-                    This demo shows a real research session analyzing investment opportunities in the pig farming market, demonstrating the system's ability to gather and synthesize complex market information.
+                    This demo showcases a real research session where multiple AI agents collaborate to analyze investment opportunities, 
+                    demonstrating web search integration, content analysis, and structured report generation with proper citations.
                 </p>
             </div>
         </div>
@@ -575,6 +1063,41 @@
             </div>
         </div>
     </footer>
+
+    <!-- Modal for image viewing -->
+    <div id="imageModal" class="image-modal">
+        <span class="modal-close" onclick="closeImageModal()">&times;</span>
+        <img class="modal-content-img" id="modalImage">
+    </div>
+
+    <script>
+        // Image modal functions
+        function openImageModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = src;
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 
     <script>
         // Smooth scrolling for navigation links
