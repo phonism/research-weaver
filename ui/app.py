@@ -37,9 +37,9 @@ def format_llm_content(content: str, memory_store=None) -> str:
     def format_action_with_expander(match):
         action_content = match.group(1).strip()
         
-        # Check if this is a READ action and get status
-        if "TOOL: read" in action_content and "INPUT:" in action_content:
-            lines = action_content.split("\\n")
+        # Check if this is a READ action and get status (case insensitive)
+        if ("TOOL: read" in action_content or "TOOL: READ" in action_content) and "INPUT:" in action_content:
+            lines = action_content.split("\n")
             input_line = next((l for l in lines if l.startswith("INPUT:")), None)
             if input_line:
                 url = input_line.split(":", 1)[1].strip()
@@ -58,6 +58,7 @@ def format_llm_content(content: str, memory_store=None) -> str:
                             summary = read_op.get("summary", "") or ""
                             original_content = read_op.get("original_content", "") or ""
                             break
+                else:
                 
                 # Return formatted action with placeholder for expander
                 status_text = ""
@@ -75,7 +76,7 @@ def format_llm_content(content: str, memory_store=None) -> str:
                 # Create a unique marker for this read action
                 marker = f"__READ_EXPANDER__{url}__"
                 
-                return f"**🔧 ACTION:** `{action_content}`{status_text}\\n{marker}"
+                return f"**🔧 ACTION:** `{action_content}`{status_text}\n{marker}"
         
         # Default action formatting
         return f"**🔧 ACTION:** `{action_content}`"
@@ -91,7 +92,7 @@ def format_llm_content(content: str, memory_store=None) -> str:
     # Format complete tags
     formatted_content = re.sub(
         r"<complete>(.*?)</complete>", 
-        lambda m: f"\\n\\n**✅ COMPLETE:**\\n\\n{m.group(1).strip()}\\n\\n", 
+        lambda m: f"\n\n**✅ COMPLETE:**\n\n{m.group(1).strip()}\n\n", 
         formatted_content, 
         flags=re.DOTALL
     )
@@ -99,7 +100,7 @@ def format_llm_content(content: str, memory_store=None) -> str:
     # Format thinking tags with special styling
     formatted_content = re.sub(
         r"<thinking>(.*?)</thinking>", 
-        lambda m: f"> 🤔 **Thinking Process:**\\n> \\n> {m.group(1).strip().replace(chr(10), chr(10) + '> ')}", 
+        lambda m: f"> 🤔 **Thinking Process:**\n> \n> {m.group(1).strip().replace(chr(10), chr(10) + '> ')}", 
         formatted_content, 
         flags=re.DOTALL
     )
@@ -184,7 +185,7 @@ async def research_worker(query: str, monitor: ResearchMonitor, memory_store: Me
         error_msg = str(e)
         error_trace = traceback.format_exc()
         print(f"[Research Error] {error_msg}")
-        print(f"[Research Error Trace]\\n{error_trace}")
+        print(f"[Research Error Trace]\n{error_trace}")
         monitor.error = error_msg
         monitor.research_complete = True
         monitor.add_update("error", {"error": error_msg, "trace": error_trace})
@@ -264,9 +265,13 @@ def render_main_input():
     return query, start_button
 
 
-def start_research_worker(query):
+def start_research_worker(query, research_func=None):
     """Start research in background thread"""
     import threading
+    
+    # Use provided research function or default
+    if research_func is None:
+        research_func = run_async_research
     
     # Create new monitor, memory store and start research
     st.session_state.monitor = ResearchMonitor()
@@ -275,7 +280,7 @@ def start_research_worker(query):
     
     # Start research in background thread
     thread = threading.Thread(
-        target=run_async_research,
+        target=research_func,
         args=(query, st.session_state.monitor, st.session_state.memory_store)
     )
     thread.start()
@@ -322,25 +327,37 @@ def render_research_progress():
                         st.write(f"🔍 **Round {round_num} [{timestamp}] Researcher ({agent_role}):**")
                     
                     # Process content, replace READ expander markers with actual expanders
-                    lines = formatted_content.split("\\n")
+                    lines = formatted_content.split("\n")
                     current_block = []
                     
                     for line in lines:
                         if "__READ_EXPANDER__" in line:
                             # First display accumulated content
                             if current_block:
-                                st.markdown("\\n".join(current_block))
+                                st.markdown("\n".join(current_block))
                                 current_block = []
                             
                             # Extract URL from marker and create expander
                             if line.startswith("__READ_EXPANDER__"):
                                 url_from_marker = line.replace("__READ_EXPANDER__", "").replace("__", "")
                             else:
-                                url_from_marker = line.replace("READ_EXPANDER__", "")
+                                # Handle lines that contain the marker but don't start with it
+                                marker_start = line.find("__READ_EXPANDER__")
+                                if marker_start >= 0:
+                                    marker_end = line.find("__", marker_start + len("__READ_EXPANDER__"))
+                                    if marker_end >= 0:
+                                        url_from_marker = line[marker_start + len("__READ_EXPANDER__"):marker_end]
+                                    else:
+                                        url_from_marker = line[marker_start + len("__READ_EXPANDER__"):]
+                                else:
+                                    url_from_marker = line.replace("READ_EXPANDER__", "")
+                            
                                 
                             # Find corresponding read operation from memory store
                             if st.session_state.memory_store:
                                 read_operations = st.session_state.memory_store.get_read_operations()
+                                # Debug log
+                                    
                                 for read_op in reversed(read_operations):
                                     if read_op["url"] == url_from_marker and read_op["status"] == "completed":
                                         url = read_op["url"]
@@ -354,7 +371,7 @@ def render_research_progress():
                                                 st.markdown(f"🔗 [View Original]({url})")
                                         elif original_content and len(original_content) > 0:
                                             if len(original_content) > 800:
-                                                content_to_show = original_content[:800] + "...\\n[Content Truncated]"
+                                                content_to_show = original_content[:800] + "...\n[Content Truncated]"
                                             else:
                                                 content_to_show = original_content
                                             with st.expander(f"📄 View Content - {url[:50]}...", expanded=False):
@@ -366,7 +383,7 @@ def render_research_progress():
                     
                     # Display remaining content
                     if current_block:
-                        st.markdown("\\n".join(current_block))
+                        st.markdown("\n".join(current_block))
                     
                     st.write("---")
         else:
@@ -541,7 +558,7 @@ def render_welcome_message():
     """)
 
 
-def main():
+def main(research_func=None):
     """Main application entry point"""
     # Initialize session state
     initialize_session_state()
@@ -558,7 +575,7 @@ def main():
 
     # Handle start button
     if start_button and query:
-        start_research_worker(query)
+        start_research_worker(query, research_func)
 
     # Display research progress
     render_research_progress()

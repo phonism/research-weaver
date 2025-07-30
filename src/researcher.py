@@ -2,6 +2,7 @@
 Researcher Agent that focuses on specific research tasks with limited context
 """
 import re
+import logging
 from typing import Optional, Dict, Any
 
 from .core import (
@@ -176,7 +177,6 @@ MINIMIZE ITERATIONS: Aim to complete research in 1-2 thinking+action cycles maxi
         Parse researcher's output to determine next action(s)
         """
         import logging
-        logging.debug(f"[Researcher {self.research_area}] LLM Output: {output[:500]}...")
         response = AgentResponse(thought=output)
         
         # Find all action tags
@@ -259,18 +259,12 @@ MINIMIZE ITERATIONS: Aim to complete research in 1-2 thinking+action cycles maxi
         """
         Execute multiple actions sequentially for clear logging
         """
-        print(f"Executing {len(actions)} actions sequentially...")
-        
-        for i, action in enumerate(actions, 1):
+        for action in actions:
             tool = action.parameters.get("tool")
-            print(f"[{i}/{len(actions)}] Executing {tool}...")
-            
             if tool == "search":
                 await self._execute_search(action.parameters.get("query"))
             elif tool == "read":
                 await self._execute_read(action.parameters.get("url"))
-                
-        print("All actions completed.")
             
             
     async def _execute_search(self, query: str):
@@ -319,17 +313,12 @@ MINIMIZE ITERATIONS: Aim to complete research in 1-2 thinking+action cycles maxi
             
             # Add search results to context
             import logging
-            logging.debug(f"[{self.role}] Adding search results to context")
-            logging.debug(f"[{self.role}] Query: {query}")
-            logging.debug(f"[{self.role}] Results length: {len(formatted_results)}")
-            logging.debug(f"[{self.role}] Results preview: {formatted_results[:200]}...")
             
             self.context.add_message(
                 MessageRole.SYSTEM,
                 formatted_results
             )
             
-            logging.debug(f"[{self.role}] Context now has {len(self.context.conversation_history)} messages")
             
             # Store as collected info
             info = InfoPiece(
@@ -494,14 +483,6 @@ Summary:"""
             messages_hash = hashlib.md5(json.dumps(messages, ensure_ascii=False).encode()).hexdigest()
             content_hash = hashlib.md5(content[:3000].encode()).hexdigest()
             
-            logging.info(f"[SUMMARIZE_CALL] Agent: {self.research_area}")
-            logging.info(f"[SUMMARIZE_CALL] URL: {url}")
-            logging.info(f"[SUMMARIZE_CALL] Initial Task: {self.initial_task}")
-            logging.info(f"[SUMMARIZE_CALL] Content Length: {len(content)}")
-            logging.info(f"[SUMMARIZE_CALL] Content Hash (first 3000 chars): {content_hash}")
-            logging.info(f"[SUMMARIZE_CALL] Messages Hash: {messages_hash}")
-            logging.info(f"[SUMMARIZE_CALL] Model: {self.model}, Temperature: 0.3")
-            logging.info(f"[SUMMARIZE_CALL] Prompt Length: {len(summarize_prompt)}")
             
             response = await self.llm_client.chat.completions.create(
                 model=self.model,
@@ -510,7 +491,6 @@ Summary:"""
             )
             
             summary = response.choices[0].message.content
-            logging.info(f"[SUMMARIZE_RESPONSE] Summary Length: {len(summary)}")
             return summary
             
         except Exception as e:
